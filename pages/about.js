@@ -10,6 +10,7 @@ const GradeOptionsManager = require("../services/GradeOptionsManager");
 const CountryOptionsManager = require("../services/CountryOptionsManager");
 const LessonOptionsManager = require("../services/LessonOptionsManager");
 const QuestOptionsManager = require("../services/QuestOptionsManager");
+import { selectCustomStyles } from "../services/SelectCustomStyle";
 
 const about = () => {
     const [subjectOptionsManager, setSubjectOptionsManager] = useState(new SubjectOptionsManager());
@@ -17,55 +18,6 @@ const about = () => {
     const [countryOptionsManager, setCountryOptionsManager] = useState(new CountryOptionsManager());
     const [lessonOptionsManager, setLessonOptionsManager] = useState(new LessonOptionsManager());
     const [questOptionsManager, setQuestOptionsManager] = useState(new QuestOptionsManager());
-
-    const customStyles = {
-        option: (provided, state) => ({
-          ...provided,
-          color: state.isSelected ? 'white' : 'black',
-          background: state.isFocused? '#EEF7FF' : state.isPressed? '#D4EAFF' : state.isSelected ? '#4EA6FF' : 'white',
-          padding: 10,
-        }),
-        control: (provided, state) => ({
-            ...provided,
-            background: state.isDisabled? '#FCFBF9' : state.focused? '#EFF7FF' : '#F9FCFF',
-            color: 'pink',
-            border: '1px solid #EFF7FF',
-            "&:hover": {
-                border: '1px solid #D4EAFF'
-            },
-            "&:active": {
-                border: '1px solid #D4EAFF'
-            }
-        }),
-        singleValue: (provided, state) => ({
-            ...provided,
-            color: 'black',
-        }),
-        indicatorSeparator: (provided, state) => ({
-            ...provided,
-            background: state.focused? '#F9FCFF' : '#D4EAFF',
-        }),
-        placeholder: (provided, state) => ({
-            ...provided,
-            color: '#BCBCBC',
-        }),
-        multiValue: (provided, state) => ({
-            ...provided,
-            background: '#4EA6FF',
-        }),
-        multiValueLabel: (provided, state) => ({
-            ...provided,
-            color: 'white',
-        }),
-        multiValueRemove: (provided, state) => ({
-            ...provided,
-            color: '#D4EAFF',
-            "&:hover": {
-                color: '#4EA6FF',
-                background: '#D4EAFF'
-            }
-        }),
-    }
 
     return (
         <div>
@@ -78,7 +30,7 @@ const about = () => {
 
                 <AsyncPaginate
                     className={AboutStyles.select_single}
-                    styles={customStyles}
+                    styles={selectCustomStyles}
                     placeholder="Select subject"
                     isSearchable={false}
                     isClearable={true}
@@ -95,7 +47,7 @@ const about = () => {
 
                 <AsyncPaginate
                     className={AboutStyles.select_single}
-                    styles={customStyles}
+                    styles={selectCustomStyles}
                     placeholder="Select grade"
                     isSearchable={false}
                     isClearable={true}
@@ -117,9 +69,8 @@ const about = () => {
 
                 <AsyncPaginate
                     className={AboutStyles.select_multi}
-                    styles={customStyles}
+                    styles={selectCustomStyles}
                     placeholder="Select countries"
-                    styles={customStyles}
                     isMulti
                     isSearchable={false}
                     closeMenuOnSelect={false}
@@ -141,7 +92,7 @@ const about = () => {
 
                 <AsyncPaginate
                     className={AboutStyles.select_multi}
-                    styles={customStyles}
+                    styles={selectCustomStyles}
                     placeholder="Search and select lessons"
                     isMulti
                     isSearchable={true}
@@ -166,7 +117,7 @@ const about = () => {
 
                 <AsyncPaginate
                     className={AboutStyles.select_multi}
-                    styles={customStyles}
+                    styles={selectCustomStyles}
                     placeholder="Search and select quests"
                     isMulti
                     isSearchable={true}
