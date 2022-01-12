@@ -1,0 +1,21 @@
+.wrapper {
+    width: calc(100vw - 400px);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.select_single {
+    width: 240px;
+    margin-right: 20px;
+}
+
+.select_multi {
+    min-width: 400px;
+    flex-grow: 1;
+}
+
+.title {
+    text-shadow: blue;
+    margin-right: 40px;
+}
