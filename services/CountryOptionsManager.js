@@ -42,11 +42,6 @@ module.exports = class CountryOptionsManager {
         this.pagesFetched = pageToFetch;
 
         const pageCountries = res.data.data
-        pageCountries.forEach(country => {
-            country.label = country.name;
-            country.value = country.id;
-        });
-      
         const currentPage = res.data.meta.current_page;
         const lastPage = res.data.meta.last_page;
         const hasMore = currentPage < lastPage

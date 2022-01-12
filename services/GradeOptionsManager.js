@@ -42,11 +42,6 @@ module.exports = class GradeOptionsManager {
         this.pagesFetched = pageToFetch;
 
         const pageGrades = res.data.data
-        pageGrades.forEach(grades => {
-            grades.label = grades.name;
-            grades.value = grades.id;
-        });
-      
         const currentPage = res.data.meta.current_page;
         const lastPage = res.data.meta.last_page;
         const hasMore = currentPage < lastPage

@@ -42,11 +42,6 @@ module.exports = class SubjectOptionsManager {
         this.pagesFetched = pageToFetch;
 
         const pageSubjects = res.data.data
-        pageSubjects.forEach(subject => {
-            subject.label = subject.name;
-            subject.value = subject.id;
-        });
-      
         const currentPage = res.data.meta.current_page;
         const lastPage = res.data.meta.last_page;
         const hasMore = currentPage < lastPage

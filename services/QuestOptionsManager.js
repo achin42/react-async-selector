@@ -57,11 +57,6 @@ module.exports = class QuestOptionsManager {
         this.pagesFetched = pageToFetch;
 
         const pageQuests = res.data.data
-        pageQuests.forEach(quest => {
-            quest.label = quest.name;
-            quest.value = quest.id;
-        });
-
         const currentPage = res.data.meta.current_page;
         const lastPage = res.data.meta.last_page;
         const hasMore = currentPage < lastPage

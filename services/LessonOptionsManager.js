@@ -57,11 +57,6 @@ module.exports = class LessonOptionsManager {
         this.pagesFetched = pageToFetch;
 
         const pageLessons = res.data.data
-        pageLessons.forEach(lesson => {
-            lesson.label = lesson.name;
-            lesson.value = lesson.id;
-        });
-
         const currentPage = res.data.meta.current_page;
         const lastPage = res.data.meta.last_page;
         const hasMore = currentPage < lastPage
