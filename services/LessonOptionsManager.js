@@ -2,10 +2,9 @@
 import axios from "axios";
 
 module.exports = class LessonOptionsManager {
-    constructor(selectedOptions = [], options = [], searchTerm="") {
+    constructor(selectedOptions = [], searchTerm="") {
         this.selectedOptions = selectedOptions == null ? [] : selectedOptions;
         this.hasSelectedInitialOptions = selectedOptions != null;
-        this.options = [];
         this.searchTerm = "";
         this.pagesFetched = 0;
         this.fetchCounter = 0;
@@ -21,7 +20,6 @@ module.exports = class LessonOptionsManager {
 
     loadOptions = async (search, prevOptions) => {
         if(search != null && search != this.searchTerm) {
-            this.options = [];
             this.pagesFetched = 0;
         }
 
@@ -63,8 +61,6 @@ module.exports = class LessonOptionsManager {
             lesson.label = lesson.name;
             lesson.value = lesson.id;
         });
-
-        this.options = this.options.concat(pageLessons);
 
         const currentPage = res.data.meta.current_page;
         const lastPage = res.data.meta.last_page;
