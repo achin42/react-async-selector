@@ -1,5 +1,3 @@
-
-
 const selectCustomStyles = {
     option: (provided, state) => ({
         ...provided,

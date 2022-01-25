@@ -12,7 +12,11 @@ const LessonOptionsManager = require("../services/LessonOptionsManager");
 const QuestOptionsManager = require("../services/QuestOptionsManager");
 import { selectCustomStyles } from "../services/SelectCustomStyle";
 
+import useFetchAboutData from "../hooks/useFetchAboutData";
+
 const about = () => {
+    // useFetchAboutData();
+
     const [subjectOptionsManager, setSubjectOptionsManager] = useState(new SubjectOptionsManager());
     const [gradeOptionsManager, setGradeOptionsManager] = useState(new GradeOptionsManager());
     const [countryOptionsManager, setCountryOptionsManager] = useState(new CountryOptionsManager());
@@ -138,10 +142,21 @@ const about = () => {
 
             <br/>
 
-            <Puff stroke="#D66F5B" height={50} width={50} strokeWidth={3} speed={1.2}/>
+            <Puff stroke="#D66F5B" height={100} width={100} strokeWidth={1} speed={1.2}/>
             
         </div>
     )
 }
+
+about.getInitialProps = async ({ query }) => {
+    console.log("--------------------------")
+    console.log( query )
+    console.log("--------------------------")
+    return {
+        props: {
+            query
+        }
+    }
+};
 
 export default about;

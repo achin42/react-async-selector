@@ -1,14 +1,17 @@
 import '../styles/globals.css'
 import Layout from '../components/Layout'
+import { RecoilRoot } from "recoil";
 // import { GlobalContext } from '../context/GlobalContext'
 
 function MyApp({ Component, pageProps }) {
   return (
-    <Layout>
-      {/* <GlobalContext.Provider> */}
-        <Component {...pageProps} />
-      {/* </GlobalContext.Provider> */}
-    </Layout> 
+    <RecoilRoot>
+      <Layout>
+        {/* <GlobalContext.Provider> */}
+          <Component {...pageProps} />
+        {/* </GlobalContext.Provider> */}
+      </Layout> 
+    </RecoilRoot>
   )
 }
 

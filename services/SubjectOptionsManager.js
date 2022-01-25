@@ -50,5 +50,5 @@ module.exports = class SubjectOptionsManager {
           options: pageSubjects,
           hasMore
         };  
-      };
+    };
 }
