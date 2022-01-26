@@ -1,6 +1,6 @@
 
 
-import { allKnownExamsAtom } from '../data/examsRecoil'
+import { allKnownExamsAtom } from '../../data/examsRecoil'
 import { useRecoilState } from 'recoil'
 
 const useExamRecoilActions = () => {

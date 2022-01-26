@@ -14,16 +14,10 @@ class ScheduledExam {
         this.createdAt = dateFromISO(scheduledExamObject.createdAt);
         this.updatedAt = dateFromISO(scheduledExamObject.updatedAt);
         this.report = new Report(scheduledExamObject.report);
-        this.exam = scheduledExamObject.exam_details ? enrichedExam(new Exam(scheduledExamObject.exam_details)) : null
+        this.exam = scheduledExamObject.exam_details ? new Exam(scheduledExamObject.exam_details) : null
     }
 
     setExam = (exam) => this.exam = exam
-
-    enrichedExam = (exam) => {
-        exam.setScheduledExamId(this)
-        exam.refreshDynamicState()
-        return exam
-    }
 }
 
 module.exports = { ScheduledExam }

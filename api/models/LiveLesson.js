@@ -49,7 +49,7 @@ class LiveLessonStatus {
     }
 }
 
-module.exports = {
+export {
     LiveLesson,
     Tutor,
     LiveLessonStatus

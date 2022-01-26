@@ -1,4 +1,4 @@
-import { atom, selector } from 'recoil'
+import { atom, selector, selectorFamily } from 'recoil'
 
 const allKnownExamsAtom = atom({
     key: 'allKnownExamsAtom', 

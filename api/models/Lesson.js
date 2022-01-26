@@ -21,4 +21,4 @@ class Lesson {
     }
 }
 
-module.exports = { Lesson }
+export { Lesson }

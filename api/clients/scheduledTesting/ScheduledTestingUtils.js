@@ -9,21 +9,17 @@ const language = 'en'
 const buildNumber = '1'
 
 
-const headers = (authToken, deviceUUID) => {
-    return {
-        'app-token': appToken,
-        'language': language,
-        'build-number': buildNumber,
-        'auth-token': authToken,
-        'device-uuid': deviceUUID
-    }
-}
+const headers = (authToken, deviceUUID) => ({
+    'app-token': appToken,
+    'language': language,
+    'build-number': buildNumber,
+    'auth-token': authToken,
+    'device-uuid': deviceUUID
+})
 
-module.exports = {
-    getScheduledTestingHeaders: headers,
-    scheduledTestingUrls: {
-        upcomingPublishedExams: baseUrl + upcomingPublishedExamsPath,
-        scheduledExams: baseUrl + scheduledExamsPath,
-        registerExam: baseUrl,
-    }
+export const getScheduledTestingHeaders = headers
+export const scheduledTestingUrls = {
+    upcomingPublishedExams: baseUrl + upcomingPublishedExamsPath,
+    scheduledExams: baseUrl + scheduledExamsPath,
+    registerExam: baseUrl,
 }

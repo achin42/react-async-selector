@@ -15,6 +15,7 @@ class ScheduledExamsClient {
             const response = await axios.get(url, { params:{} , headers: getScheduledTestingHeaders(this.authToken, this.deviceUuid) })
             return { newScheduledExams: response.data.exams.map(scheduledExamObject => new ScheduledExam(scheduledExamObject)), examsError: null }
         } catch(error) {
+            console.log(error)
             const examsError = new STErrorResponse(error.response.data)
             return { newScheduledExams: null, examsError: examsError }
         }

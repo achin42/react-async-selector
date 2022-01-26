@@ -21,7 +21,7 @@ class Exam {
         this.countries = examObject.countries.map(countryObject => new Country(countryObject))
         this.grade = new Grade(examObject.grade);
         this.subject = new Subject(examObject.subject);
-        this.questions = examObject.questions.map(questionObject => new Question(questionObject));
+        // this.questions = examObject.questions.map(questionObject => new Question(questionObject));
 
         this.scheduledExamId = null;
 

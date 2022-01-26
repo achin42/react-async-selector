@@ -57,20 +57,20 @@ const useHomeData = () => {
             setIsLoading(false)
             return
         }
-    
+        
         const { newScheduledExams, scheduledExamsError } = await scheduledExamsClient.getScheduledExams("all")
-    
+        
         if(scheduledExamsError) {
             setError(scheduledExamsError)
             setIsLoading(false)
             return
         }
-
+        
         setScheduledExams(newScheduledExams)
-
+        
         // SHOULD REMOVE AFTER TESTING
         seedForTest(newExams);
-
+        
         const enrichedNewExams = newExams.map(exam => { 
             exam.setScheduledExamId(newScheduledExams.find(scheduledExam => scheduledExam.examId === exam.id)) 
             exam.refreshDynamicState()
@@ -80,6 +80,7 @@ const useHomeData = () => {
         const mergedAllKnownExams = addOrUpdateExamsList([...allKnownExams], enrichedNewExams)
 
         setAllKnownExams(mergedAllKnownExams)
+
         setIsLoading(false)
     }
 
@@ -101,13 +102,13 @@ const useHomeData = () => {
     }
 
     const seedForTest = (newExams) => {
-        newExams[1].registrationCloseTime = minutesBeforeNow(118)
-        newExams[1].registrationCloseWarningDurationInHours = 2
+        newExams[0].registrationCloseTime = minutesBeforeNow(118)
+        newExams[0].registrationCloseWarningDurationInHours = 2
     }
 
 
 
-    return { isLoading, exams: upcomingExams, error, refetch: fetchExamsData };
+    return { isLoading, upcomingExams, error, refetch: fetchExamsData };
 };
 
 export default useHomeData;

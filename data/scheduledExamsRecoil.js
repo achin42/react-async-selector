@@ -6,7 +6,7 @@ const scheduledExamsAtom = atom({
 });
 
 const upcomingScheduledExamsSelector = selector({
-    key: 'upcomingExamsSelector',
+    key: 'upcomingScheduledExamsSelector',
     get: ({get}) => {
         const scheduledExams = get(scheduledExamsAtom);
         const upcomingScheduledExams = scheduledExams.filter(scheduledExam => scheduledExam.exam.isValidUpcomingExam())
