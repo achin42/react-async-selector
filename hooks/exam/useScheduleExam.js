@@ -15,21 +15,22 @@ const useScheduleExam = (examId) => {
     const [isAttemptingScheduling, setIsAttemptingScheduling] = useState(false)
     const [schedulingError, setSchedulingError] = useState(null)
 
-    const attemptScheduling = () => {
+    const attemptScheduling = (examId) => {
         setIsAttemptingScheduling(true)
         setSchedulingError(null)
         
         examsClient.registerExam(examId)
             .then(scheduledExam => { 
+                setIsAttemptingScheduling(false)
+                
                 const exam = getExamForId(examId)
                 if(exam) {
                     const examClone = { ...exam }
                     examClone.setScheduledExamId(scheduledExam)
-                    scheduledExam.set(exam)
+                    scheduledExam.set(examClone)
                     addOrUpdateExam(examClone)
                     addOrUpdateScheduledExam(scheduledExam)
                 }
-                setIsAttemptingScheduling(false)
             })
             .catch(error => { 
                 setSchedulingError(error)

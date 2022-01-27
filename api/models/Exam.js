@@ -36,8 +36,9 @@ class Exam {
     }
 
     isValidUpcomingExam = () => {
-        if(this.scheduledExamId) { return !this.hasFinished() }        
-        return !this.hasRegistrationClosed()
+        return true
+        // if(this.scheduledExamId) { return !this.hasFinished() }        
+        // return !this.hasRegistrationClosed()
     }
 
     shouldShow = () => !(!this.scheduledExamId && !this.shouldShowRegistrationCloseWarning && secondsFromNow(this.registrationCloseTime < 0))
@@ -83,7 +84,7 @@ class Exam {
         return hasChanges;
     }
 
-    hasRegistrationClosed = () =>  secondsFromNow(this.registrationCloseTime) < 0
+    hasRegistrationClosed = () =>  this.registrationCloseTime < new Date()
 
     hasFinished = () => minutesAfter(this.startDate, this.durationInMins) < new Date()
 }

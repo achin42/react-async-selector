@@ -14,6 +14,8 @@ class STError {
     }
 }
 
+const LocalParsingError = STErrorResponse
+
 export {
     STErrorResponse,
     STError

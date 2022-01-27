@@ -20,4 +20,4 @@ class ScheduledExam {
     setExam = (exam) => this.exam = exam
 }
 
-module.exports = { ScheduledExam }
+export { ScheduledExam }

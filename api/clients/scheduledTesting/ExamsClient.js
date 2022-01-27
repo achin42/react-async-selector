@@ -1,7 +1,8 @@
 import axios from "axios";
 import { scheduledTestingUrls, getScheduledTestingHeaders } from "./ScheduledTestingUtils";
 import { Exam } from "./../../models/Exam";
-import { STErrorResponse } from "./../../models/STErrorResponse"
+import { ScheduledExam } from "../../models/ScheduledExam";
+import { STErrorResponse } from "../../models/STErrorResponse"
 
 class ExamsClient {
     constructor(authToken, deviceUuid) {
@@ -19,17 +20,14 @@ class ExamsClient {
         }
     }
 
-    registerExam = async (examId) => {
-        const payload = { 
-            exam_id: examId,
-            learner_name: "Learner Name"
-        }
+    registerExam = (examId) => {
+        const payload = { exam_id: examId }
         const headers = getScheduledTestingHeaders(this.authToken, this.deviceUuid)
 
         return new Promise((resolve, reject) => {
             axios.post(scheduledTestingUrls.registerExam, payload, { headers: headers })
-             .then(function ({response}) { resolve(new ScheduledExam(response.data)) })
-             .catch(function (error) { console.log(error.response.data); reject(new STErrorResponse(error.response.data))})
+             .then(function (response) { resolve(new ScheduledExam(response.data)) })
+             .catch(function (error) { reject(new STErrorResponse(error.response.data)) })
         })
     }
 }
