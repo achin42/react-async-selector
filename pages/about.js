@@ -14,7 +14,7 @@ import { selectCustomStyles } from "../services/SelectCustomStyle";
 
 import useFetchAboutData from "../hooks/useFetchAboutData";
 
-const about = () => {
+const About = () => {
     // useFetchAboutData();
 
     const [subjectOptionsManager, setSubjectOptionsManager] = useState(new SubjectOptionsManager());
@@ -148,15 +148,15 @@ const about = () => {
     )
 }
 
-about.getInitialProps = async ({ query }) => {
-    console.log("--------------------------")
-    console.log( query )
-    console.log("--------------------------")
-    return {
-        props: {
-            query
-        }
-    }
-};
+// about.getInitialProps = async ({ query }) => {
+//     console.log("--------------------------")
+//     console.log( query )
+//     console.log("--------------------------")
+//     return {
+//         props: {
+//             query
+//         }
+//     }
+// };
 
-export default about;
+export default About;

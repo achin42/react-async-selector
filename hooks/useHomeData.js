@@ -4,8 +4,7 @@ import { ExamsClient } from '../api/clients/scheduledTesting/ExamsClient'
 import { ScheduledExamsClient } from '../api/clients/scheduledTesting/ScheduledExamsClient'
 import { useStopwatch } from 'react-timer-hook'
 import { allKnownExamsAtom, upcomingExamsSelector } from '../data/examsRecoil'
-import { scheduledExamsAtom } from '../data/scheduledExamsRecoil'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { addOrUpdateExamsList } from '../utils/listUtils'
 
 import { minutesBeforeNow } from '../utils/dateUtils'
@@ -22,7 +21,6 @@ const useHomeData = () => {
     // Global state
     const [allKnownExams, setAllKnownExams] = useRecoilState(allKnownExamsAtom);
     const upcomingExams = useRecoilValue(upcomingExamsSelector);
-    const setScheduledExams = useSetRecoilState(scheduledExamsAtom);
 
 
 
@@ -34,7 +32,7 @@ const useHomeData = () => {
     }, [storedDeviceUuid]);
 
     useEffect(() => {
-        if(!isLoading && allKnownExams && allKnownExams.length > 0) {  refreshDynamicStatesOfExams() }
+        if(!isLoading && allKnownExams && allKnownExams.length > 0) {  refreshActionStatesOfExams() }
     }, [seconds])
 
 
@@ -66,18 +64,17 @@ const useHomeData = () => {
             return
         }
         
-        setScheduledExams(newScheduledExams)
-        
         // SHOULD REMOVE AFTER TESTING
-        seedForTest(newExams);
-        
-        const enrichedNewExams = newExams.map(exam => { 
-            exam.setScheduledExamId(newScheduledExams.find(scheduledExam => scheduledExam.examId === exam.id)) 
-            exam.refreshDynamicState()
-            return exam;
+        // seedForTest(newExams);
+
+
+        const allNewExams = addOrUpdateExamsList(newExams, newScheduledExams)
+        const refreshedNewExams = allNewExams.map(exam => {
+            exam.refreshActionState()
+            return exam
         })
 
-        const mergedAllKnownExams = addOrUpdateExamsList([...allKnownExams], enrichedNewExams)
+        const mergedAllKnownExams = addOrUpdateExamsList([...allKnownExams], refreshedNewExams)
 
         setAllKnownExams(mergedAllKnownExams)
 
@@ -90,15 +87,14 @@ const useHomeData = () => {
 
     // Private actions
 
-    const refreshDynamicStatesOfExams = () => {
+    const refreshActionStatesOfExams = () => {
         let refreshedExams = [];
-        allKnownExams.forEach(exam => { 
-            if(exam.refreshDynamicState()) refreshedExams.push(exam)
-        })
+        allKnownExams.forEach(exam => { if(exam.refreshActionState()) refreshedExams.push(exam) })
 
-        refreshedExams.forEach(refreshedExam => {
-            setAllKnownExams(allKnownExams.map(exam => { return ( exam.id === refreshedExam.id ?  refreshedExam : exam ) } ))
-        })
+        if(refreshedExams.length > 0) {
+            let mergedAllKnownExams = addOrUpdateExamsList([...allKnownExams], refreshedExams)
+            setAllKnownExams(mergedAllKnownExams)
+        }
     }
 
     const seedForTest = (newExams) => {

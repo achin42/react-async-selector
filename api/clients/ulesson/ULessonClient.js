@@ -26,7 +26,7 @@ class ULessonClient {
 
     getLiveLessonsForIds = (ids) => {
         const headers = getULessonHeaders(this.authToken, this.deviceUuid)
-        const queryParams = getQueryParamsFromArray([338], "lesson_ids")
+        const queryParams = getQueryParamsFromArray(ids, "lesson_ids")
         const url = uLessonUrls.liveLessons + "?" + queryParams
     
         return new Promise((resolve, reject) => {

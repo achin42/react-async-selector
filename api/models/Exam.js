@@ -1,4 +1,4 @@
-import { dateFromISO, secondsFromNow, secondsToMMSS, minutesAfter } from '../../utils/dateUtils'
+import { dateFromISO, secondsFromNow, secondsToMMSS, secondsToHHMMSS, minutesAfter, singleUnitCountdown } from '../../utils/dateUtils'
 
 class Exam {
     constructor(examObject) {
@@ -23,7 +23,7 @@ class Exam {
         this.subject = new Subject(examObject.subject);
         // this.questions = examObject.questions.map(questionObject => new Question(questionObject));
 
-        this.scheduledExamId = null;
+        this.scheduledExam = null;
 
         // Dynamic state variables
         this.shouldShowRegistrationCloseWarning = false;
@@ -33,60 +33,73 @@ class Exam {
         this.examStartTimerText = null;
 
         this.canExamStart = false
+
+        this.actionState = null
     }
+
+    setScheduledExam = (scheduledExam) => { this.scheduledExam = scheduledExam }
 
     isValidUpcomingExam = () => {
-        return true
-        // if(this.scheduledExamId) { return !this.hasFinished() }        
-        // return !this.hasRegistrationClosed()
+        if(this.scheduledExam) {
+            return !this.scheduledExam.finishedAt
+        } else {
+            return !this.hasRegistrationClosed()
+        }
     }
 
-    shouldShow = () => !(!this.scheduledExamId && !this.shouldShowRegistrationCloseWarning && secondsFromNow(this.registrationCloseTime < 0))
+    shouldShow = () => !(!this.scheduledExam && !this.shouldShowRegistrationCloseWarning && secondsFromNow(this.registrationCloseTime < 0))
 
-    setScheduledExamId = (scheduledExam) => { if(scheduledExam) this.scheduledExamId = scheduledExam.id }
+    
 
-    refreshDynamicState = () => {
-        let hasChanges = false;
+    refreshActionState = () => {
+        let newActionState = null;
 
-        if(this.scheduledExamId && !this.shouldShowExamStartTimer) {
+        if(this.scheduledExam) {
             const startDateSecondsLeft = secondsFromNow(this.startDate)
-            if(startDateSecondsLeft < 0) {
-                hasChanges = true;
-                this.canExamStart = true;
-                this.shouldShowExamStartTimer = false;
-                this.examStartTimerText = null;
-            }
-            if(startDateSecondsLeft <= 5 * 60 * 60) {
-                hasChanges = true;
-                this.shouldShowRegistrationCloseWarning = false;
-                this.registrationCloseWarningTimerText = null;
-                this.shouldShowExamStartTimer = true;
-                this.examStartTimerText = secondsToMMSS(startDateSecondsLeft);
-            }
-        }
-
-        if((!this.scheduledExamId && !this.shouldShowRegistrationCloseWarning) || this.shouldShowRegistrationCloseWarning) {
-            const registrationCloseSecondsLeft = secondsFromNow(this.registrationCloseTime)
-            
-            if(registrationCloseSecondsLeft > 0 && registrationCloseSecondsLeft < this.registrationCloseWarningDurationInHours * 60 * 60) {
-                hasChanges = true;
-                this.shouldShowRegistrationCloseWarning = true;
-                const registrationCloseHoursLeft = Math.floor(registrationCloseSecondsLeft / (60 * 60))
-                if(registrationCloseHoursLeft > 24) {
-                    const days = Math.floor(registrationCloseHoursLeft / 24)
-                    this.registrationCloseWarningTimerText = days + `${days > 1 ? " days" : " day"}`
+            if(!this.scheduledExam.startedAt) {
+                if(startDateSecondsLeft > 5 * 60) {
+                    newActionState = ExamActionState.ScheduledNotStartedNotCounting()
+                } else if(startDateSecondsLeft > 0) {
+                    const startDateSecondsLeft = secondsFromNow(this.startDate)
+                    const associatedTimerText = secondsToMMSS(startDateSecondsLeft);
+                    newActionState = ExamActionState.ScheduledNotStartedCounting(associatedTimerText);
+                } else if(!this.hasExamDurationElapsed()) {
+                    newActionState = ExamActionState.ScheduledNotStartedCanStart();
                 } else {
-                    this.registrationCloseWarningTimerText = registrationCloseHoursLeft + `${registrationCloseHoursLeft > 1 ? " hours" : " hour"}`
+                    newActionState = ExamActionState.ScheduledSkipped();
+                }
+            } else {
+                if(!this.scheduledExam.finishedAt) {
+                    const finishDate = minutesAfter(this.startDate, this.durationInMins)
+                    const finishDateSecondsLeft = secondsFromNow(finishDate)
+                    const associatedTimerText = secondsToHHMMSS(finishDateSecondsLeft);
+                    newActionState = ExamActionState.ScheduledStartedNotFinished(associatedTimerText)
+                } else {
+                    newActionState = ExamActionState.ScheduledStartedFinished()
                 }
             }
+        } else if(this.registrationCloseTime > new Date()) {
+            const registrationCloseSecondsLeft = secondsFromNow(this.registrationCloseTime)
+            if(registrationCloseSecondsLeft > this.registrationCloseWarningDurationInHours * 60 * 60) {
+                newActionState = ExamActionState.NotScheduledRegistrationOpen()
+            } else {
+                const associatedTimerText = singleUnitCountdown(Math.abs(registrationCloseSecondsLeft))
+                newActionState = ExamActionState.NotScheduledRegistrationIsClosing(associatedTimerText)
+            }
+        } else {
+            newActionState = ExamActionState.NotScheduledRegistrationClosed()
         }
 
-        return hasChanges;
+        let hasChanges = !newActionState.isEqualTo(this.actionState)
+
+        this.actionState = newActionState
+        
+        return hasChanges
     }
 
     hasRegistrationClosed = () =>  this.registrationCloseTime < new Date()
 
-    hasFinished = () => minutesAfter(this.startDate, this.durationInMins) < new Date()
+    hasExamDurationElapsed = () => minutesAfter(this.startDate, this.durationInMins) > new Date()
 }
 
 
@@ -171,6 +184,45 @@ class QuestionType {
 }
 
 
+class ExamActionState {
+    static names = {
+        ExamScheduledNotStartedNotCounting      : 'ExamScheduledNotStartedNotCounting',
+        ExamScheduledNotStartedCounting         : 'ExamScheduledNotStartedCounting',
+        ExamScheduledNotStartedCanStart         : 'ExamScheduledNotStartedCanStart',
+        ExamScheduledSkipped                    : 'ExamScheduledSkipped',
+        ExamScheduledStartedNotFinished         : 'ExamScheduledStartedNotFinished',
+        ExamScheduledStartedFinished            : 'ExamScheduledStartedFinished',
+        ExamNotScheduledRegistrationOpen        : 'ExamNotScheduledRegistrationOpen',
+        ExamNotScheduledRegistrationIsClosing   : 'ExamNotScheduledRegistrationIsClosing',
+        ExamNotScheduledRegistrationClosed      : 'ExamNotScheduledRegistrationClosed'
+    }
+
+    static ScheduledNotStartedNotCounting      = ()            => new ExamActionState(ExamActionState.names.ExamScheduledNotStartedNotCounting   , "REGISTERED");
+    static ScheduledNotStartedCounting         = (timerText)   => new ExamActionState(ExamActionState.names.ExamScheduledNotStartedCounting      , `STARTING IN ${timerText}`);
+    static ScheduledNotStartedCanStart         = ()            => new ExamActionState(ExamActionState.names.ExamScheduledNotStartedCanStart      , `START EXAM`);
+    static ScheduledSkipped                    = ()            => new ExamActionState(ExamActionState.names.ExamScheduledSkipped                 , `SKIPPED`);
+    static ScheduledStartedNotFinished         = (timerText)   => new ExamActionState(ExamActionState.names.ExamScheduledStartedNotFinished      , timerText);
+    static ScheduledStartedFinished            = ()            => new ExamActionState(ExamActionState.names.ExamScheduledStartedFinished         , "VIEW EXAM SUMMARY");
+    static NotScheduledRegistrationOpen        = ()            => new ExamActionState(ExamActionState.names.ExamNotScheduledRegistrationOpen     , "REGISTER FOR EXAM");
+    static NotScheduledRegistrationIsClosing   = (timerText)   => new ExamActionState(ExamActionState.names.ExamNotScheduledRegistrationIsClosing, `Registration ends in ${timerText}`);
+    static NotScheduledRegistrationClosed      = ()            => new ExamActionState(ExamActionState.names.ExamNotScheduledRegistrationClosed   , "REGISTRATION CLOSED");
+
+    constructor(name, text) {
+        this.name = name
+        this.associatedText = text
+    }
+
+    isEqualTo(state) {
+        if(state != null && this.name == state.name) {
+            if((this.associatedText != null || state.associatedText != null) && this.associatedText !== state.associatedText) return false
+            return true
+        }
+        return false
+    }
+}
+
+
 export { 
-    Exam 
+    Exam,
+    ExamActionState
 }
